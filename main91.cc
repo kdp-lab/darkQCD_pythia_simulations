@@ -14,10 +14,30 @@
 #include "TFile.h"
 #include "TTree.h"
 
-
 using namespace Pythia8;
 
-//==========================================================================
+void msg(string m){
+  printf("\r%s",m.c_str());                               
+  std::cout << std::endl;
+}
+
+void pbftp(double time_diff, int nprocessed, int ntotal){
+  /* progress bar for the people taken from alex tuna and ann wang */
+  if(nprocessed%10 == 0){
+    double rate      = (double)(nprocessed+1)/time_diff;
+    std::cout << "\r > " << nprocessed << " / " << ntotal
+	      << " | "   << std::fixed << std::setprecision(1) << 100*(double)(nprocessed)/(double)(ntotal) << "%"
+	      << " | "   << std::fixed << std::setprecision(1) << rate << "Hz"
+	      << " | "   << std::fixed << std::setprecision(1) << time_diff/60 << "m elapsed"
+	      << " | "   << std::fixed << std::setprecision(1) << (double)(ntotal-nprocessed)/(rate*60) << "m remaining"
+	      << std::flush;
+
+    // add new line at end of events
+    if (nprocessed+1 == ntotal){
+      msg("");
+    }
+  }
+}
 
 int main() {
 
@@ -28,64 +48,68 @@ int main() {
   Event& event = pythia.event;
 
   // Read in commands from external file.
-  pythia.readFile("testMatias.cmnd");
+  pythia.readFile("higgs_portal.cmnd");
 
   // Extract settings to be used in the main program.
-  int nEvent = pythia.mode("Main:numberOfEvents");
-  int nAbort = pythia.mode("Main:timesAllowErrors");
+  int nEvents = pythia.mode("Main:numberOfEvents");
+  int nAborts = pythia.mode("Main:timesAllowErrors");
 
   // Initialize.
   pythia.init();
 
-
-
   // Create root file
-  TFile* rootFile = new TFile("myTree.root","RECREATE");
-
+  TFile* f = new TFile("myTree.root","RECREATE");
   // Create a TTree
-  TTree* myTree = new TTree("myTree","Example TTree");
+  TTree* t = new TTree("t","t");
 
+  int nParticles;
+  std::vector<int> *id = 0;
+  std::vector<double> *mass = 0;
+  std::vector<double> *pt = 0;
+  std::vector<double> *eta = 0;
+  std::vector<double> *phi = 0;
 
+  t->Branch("nParticles", &nParticles);
+  t->Branch("id", &id);
+  t->Branch("mass", &mass);
+  t->Branch("pt", &pt);
+  t->Branch("eta", &eta);
+  t->Branch("phi", &phi);
+  
+  // generate events
+  std::cout<<"Generating events"<<std::endl;
 
-  int iEvent;
-  int entries;
-  int id;
-  double m;
+  // time keeper
+  std::chrono::time_point<std::chrono::system_clock> time_start;
+  std::chrono::duration<double> elapsed_seconds;
+  time_start = std::chrono::system_clock::now();
 
-  myTree->Branch("EventNumber",&iEvent,"EventNumber/I");
-  myTree->Branch("NumberEntries",&entries,"NumberEntries/I");
-  myTree->Branch("Id",&id,"Id/I");
-  myTree->Branch("Mass",&m,"Mass/D");
-
-
-  // Begin event loop.
-  int iAbort = 0;
-  for (iEvent = 0; iEvent < nEvent; ++iEvent) {
+  for (int iE = 0; iE < nEvents; ++iE) {
 
     if(!pythia.next()) continue;
 
+    // progress bar
+    elapsed_seconds = (std::chrono::system_clock::now() - time_start);
+    pbftp(elapsed_seconds.count(), iE, nEvents);
 
-    entries = event.size();
+    // get event level information
+    nParticles = event.size();
 
-    std::cout << "Event: " << iEvent << std::endl;
-    std::cout << "Event size" << entries << std::endl;
-
-    for(int j=0;j<entries;j++){
-      id = pythia.event[j].id();
-      m = pythia.event[j].m();
-      //std::cout << "Id: "<< id << "     mass: "<< m << std::endl;
-
-      myTree->Fill();
+    // loop over the particles
+    for(int iP=0; iP<nParticles; iP++){
+      id->push_back(pythia.event[iP].id());
+      mass->push_back(pythia.event[iP].m());
+      pt->push_back(pythia.event[iP].pT());
+      eta->push_back(pythia.event[iP].eta());
+      phi->push_back(pythia.event[iP].phi());
    }
 
-
+    t->Fill();
   } 
 
-  myTree->Write();  
-
-
-
-  rootFile->Close();
+  // write and cleanup
+  t->Write();  
+  f->Close();
 
   return 0;
 }

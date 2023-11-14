@@ -22,8 +22,8 @@ SHELL=/usr/bin/env bash
 
 # Check distribution (use local version first, then installed version).
 ifneq ("$(wildcard ../lib/libpythia8.*)","")
-  PREFIX_LIB=pythia8307/lib
-  PREFIX_INCLUDE=pythia8307/include
+  PREFIX_LIB=/home/abadea/pythia8307/lib
+  PREFIX_INCLUDE=/home/abadea/pythia8307/include
 endif
 CXX_COMMON:=-I$(PREFIX_INCLUDE) $(CXX_COMMON) $(GZIP_LIB)
 CXX_COMMON+= -L$(PREFIX_LIB) -Wl,-rpath,$(PREFIX_LIB) -lpythia8 -ldl
