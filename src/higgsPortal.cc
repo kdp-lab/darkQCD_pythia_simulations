@@ -42,7 +42,17 @@ void pbftp(double time_diff, int nprocessed, int ntotal){
   }
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+
+  // check user is inputting correct parameters
+  if(argc != 4){
+    std::cout << "Usage: ./higgsPortal.exe <pythiaCard> <outFileName> <maxEvents>" << std::endl;
+    return 1;
+  }
+  // read in user parameters
+  std::string pythiaCard = argv[1];
+  std::string outFileName = argv[2];
+  int maxEvents = std::stoi(argv[3]);
 
   // Generator.
   Pythia pythia;
@@ -51,17 +61,13 @@ int main() {
   Event& event = pythia.event;
 
   // Read in commands from external file.
-  pythia.readFile("./cards/higgs_portal.cmnd");
-
-  // Extract settings to be used in the main program.
-  int nEvents = pythia.mode("Main:numberOfEvents");
-  int nAborts = pythia.mode("Main:timesAllowErrors");
+  pythia.readFile(pythiaCard.c_str());
 
   // Initialize.
   pythia.init();
 
   // Create root file and tree
-  TFile* f = new TFile("myTree.root","RECREATE");
+  TFile* f = new TFile(outFileName.c_str(),"RECREATE");
   TTree* t = new TTree("t","t");
 
   // initialize branches variables
@@ -87,13 +93,13 @@ int main() {
   std::chrono::duration<double> elapsed_seconds;
   time_start = std::chrono::system_clock::now();
 
-  for (int iE = 0; iE < nEvents; ++iE) {
+  for (int iE = 0; iE < maxEvents; ++iE) {
 
     if(!pythia.next()) continue;
 
     // progress bar
     elapsed_seconds = (std::chrono::system_clock::now() - time_start);
-    pbftp(elapsed_seconds.count(), iE, nEvents);
+    pbftp(elapsed_seconds.count(), iE, maxEvents);
 
     // clear for new event
     id->clear();
@@ -122,7 +128,11 @@ int main() {
 
   // write and cleanup
   t->Write();  
+  delete t;
+
+  // close file and cleanup
   f->Close();
+  delete f;
 
   return 0;
 }
