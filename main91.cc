@@ -1,28 +1,32 @@
-// main03.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2023 Torbjorn Sjostrand.
-// PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
-// Please respect the MCnet Guidelines, see GUIDELINES for details.
+/*
 
-// Keywords: basic usage; process selection; command file; python; matplotlib
+  Authors: 
+  Matias Mantinan
+  Anthony Badea
+  Karri DiPetrillo
 
-// This is a simple test program.
-// It illustrates how different processes can be selected and studied.
-// All input is specified in the main03.cmnd file.
-// Also illustrated output to be plotted by Python/Matplotlib/pyplot.
+  Description:
+  Script to generate pythia samples
+
+*/
+
+// c, pythia, root includes
 #include <iostream>
 #include "Pythia8/Pythia.h"
 #include "TFile.h"
 #include "TTree.h"
 
+// declare pythia8 namespace
 using namespace Pythia8;
 
+// print a message to the console
 void msg(string m){
   printf("\r%s",m.c_str());                               
   std::cout << std::endl;
 }
 
+// progress bar for the people taken from alex tuna and ann wang
 void pbftp(double time_diff, int nprocessed, int ntotal){
-  /* progress bar for the people taken from alex tuna and ann wang */
   if(nprocessed%10 == 0){
     double rate      = (double)(nprocessed+1)/time_diff;
     std::cout << "\r > " << nprocessed << " / " << ntotal
@@ -57,29 +61,29 @@ int main() {
   // Initialize.
   pythia.init();
 
-  // Create root file
+  // Create root file and tree
   TFile* f = new TFile("myTree.root","RECREATE");
-  // Create a TTree
   TTree* t = new TTree("t","t");
 
+  // initialize branches variables
   int nParticles;
   std::vector<int> *id = 0;
+  std::vector<int> *status = 0;
   std::vector<double> *mass = 0;
   std::vector<double> *pt = 0;
   std::vector<double> *eta = 0;
   std::vector<double> *phi = 0;
 
+  // initialize branches
   t->Branch("nParticles", &nParticles);
   t->Branch("id", &id);
+  t->Branch("status", &status);
   t->Branch("mass", &mass);
   t->Branch("pt", &pt);
   t->Branch("eta", &eta);
   t->Branch("phi", &phi);
-  
-  // generate events
-  std::cout<<"Generating events"<<std::endl;
 
-  // time keeper
+  // time keeper for progress bar
   std::chrono::time_point<std::chrono::system_clock> time_start;
   std::chrono::duration<double> elapsed_seconds;
   time_start = std::chrono::system_clock::now();
@@ -92,18 +96,28 @@ int main() {
     elapsed_seconds = (std::chrono::system_clock::now() - time_start);
     pbftp(elapsed_seconds.count(), iE, nEvents);
 
+    // clear for new event
+    id->clear();
+    status->clear();
+    mass->clear();
+    pt->clear();
+    eta->clear();
+    phi->clear();
+    
     // get event level information
     nParticles = event.size();
 
-    // loop over the particles
+    // loop over the particles. available properties listed here https://pythia.org/latest-manual/ParticleProperties.html
     for(int iP=0; iP<nParticles; iP++){
       id->push_back(pythia.event[iP].id());
+      status->push_back(pythia.event[iP].status());
       mass->push_back(pythia.event[iP].m());
       pt->push_back(pythia.event[iP].pT());
       eta->push_back(pythia.event[iP].eta());
       phi->push_back(pythia.event[iP].phi());
    }
 
+    // fill tree on each particle loop
     t->Fill();
   } 
 
