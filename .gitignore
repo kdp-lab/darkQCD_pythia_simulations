@@ -1,0 +1,5 @@
+# folders
+bin/
+
+# file types
+*.root
