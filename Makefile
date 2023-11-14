@@ -17,6 +17,9 @@
 # Set the shell.
 SHELL=/usr/bin/env bash
 
+# make bin dir
+MKDIR_BIN=mkdir -p $(PWD)/bin
+
 # Include the configuration.
 -include Makefile.inc
 
@@ -45,51 +48,39 @@ endif
 .SECONDEXPANSION:
 .PHONY: all clean
 
-# All targets (no default behavior).
-all:
-	$(info Usage: make mainXX)
+all: mkdirBin higgsPortal
+mkdirBin:
+	$(MKDIR_BIN)
 
 # PYTHIA library.
 $(PYTHIA):
-	$(error Error: PYTHIA must be built, please run "make"\
-                in the top PYTHIA directory)
-
-
-
-
-
-
-
+	$(error Error: PYTHIA must be built, please run in the top PYTHIA directory)
 
 # ROOT (turn off all warnings for readability).
-main91: $(PYTHIA) $$@.cc
+higgsPortal: $(PYTHIA) src/$$@.cc 
 ifeq ($(ROOT_USE),true)
-	$(CXX) $@.cc -o $@ -w $(CXX_COMMON) $(ROOT_LIB)\
+	$(CXX) src/$@.cc -o bin/$@.exe -w $(CXX_COMMON) $(ROOT_LIB)\
 	 `$(ROOT_CONFIG) --cflags --glibs`
 else
 	$(error Error: $@ requires ROOT)
 endif
 
+# # ROOT (turn off all warnings for readability).
+# %: $(PYTHIA) %.cc
+# ifeq ($(ROOT_USE),true)
+# 	$(CXX) $*.cc -o $@ -w $(CXX_COMMON) $(ROOT_LIB)\
+# 	 `$(ROOT_CONFIG) --cflags --glibs`
+# else
+# 	$(error Error: $@ requires ROOT)
+# endif
 
-
-# ROOT (turn off all warnings for readability).
-%: $(PYTHIA) %.cc
-ifeq ($(ROOT_USE),true)
-	$(CXX) $*.cc -o $@ -w $(CXX_COMMON) $(ROOT_LIB)\
-	 `$(ROOT_CONFIG) --cflags --glibs`
-else
-	$(error Error: $@ requires ROOT)
-endif
-
-
-                          
 # Clean.
 clean:
-	@rm -f main[0-9][0-9]; rm -f out[0-9][0-9];\
-	rm -f main[0-9][0-9][0-9]; rm -f out[0-9][0-9][0-9];\
-	rm -f mymain[0-9][0-9]; rm -f myout[0-9][0-9];\
-	rm -f test[0-9][0-9][0-9]; rm -f *.dat;\
-	rm -f weakbosons.lhe; rm -f hist.root;\
-	rm -f *~; rm -f \#*; rm -f core*; rm -f *Dct.*; rm -f *.so;\
-	rm -f *.log; rm -f *plot.py; rm -f *.pcm; rm -f *.mpi;\
-	rm -f *.hepmc; rm -f *.yoda; rm -f *.root;
+	rm -f *~
+	rm -f \#*.*#
+	rm -f $(PWD)/include/#*.*#
+	rm -f $(PWD)/include/*~
+	rm -f $(PWD)/src/#*.*#
+	rm -f $(PWD)/src/*~
+	rm -f $(PWD)/bin/*.exe
+	rmdir bin
