@@ -3,10 +3,11 @@
 # --with-root=/cvmfs/sft.cern.ch/lcg/releases/LCG_104b_ATLAS_2/ROOT/6.28.08/x86_64-centos7-gcc11-opt
 
 # Install directory prefixes.
-PREFIX_BIN=/home/abadea/pythia8307/bin
-PREFIX_INCLUDE=/home/abadea/pythia8307/include
-PREFIX_LIB=/home/abadea/pythia8307/lib
-PREFIX_SHARE=/home/abadea/pythia8307/share/Pythia8
+PREFIX=/home/abadea/pythia8307
+PREFIX_BIN=$(PREFIX)/bin
+PREFIX_INCLUDE=$(PREFIX)/include
+PREFIX_LIB=$(PREFIX)/lib
+PREFIX_SHARE=$(PREFIX)/share/Pythia8
 
 # Compilation flags (see ./configure --help for further documentation).
 CXX=/cvmfs/sft.cern.ch/lcg/releases/gcc/11.3.0-ad0f5/x86_64-centos7/bin/g++
