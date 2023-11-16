@@ -78,6 +78,7 @@ int main(int argc, char* argv[]) {
   std::vector<double> *pt = 0;
   std::vector<double> *eta = 0;
   std::vector<double> *phi = 0;
+  std::vector<double> *tau = 0;
 
   // initialize branches
   t->Branch("nParticles", &nParticles);
@@ -87,6 +88,7 @@ int main(int argc, char* argv[]) {
   t->Branch("pt", &pt);
   t->Branch("eta", &eta);
   t->Branch("phi", &phi);
+  t->Branch("tau",&tau);
 
   // time keeper for progress bar
   std::chrono::time_point<std::chrono::system_clock> time_start;
@@ -108,6 +110,8 @@ int main(int argc, char* argv[]) {
     pt->clear();
     eta->clear();
     phi->clear();
+    tau->clear();
+
     
     // get event level information
     nParticles = event.size();
@@ -120,6 +124,7 @@ int main(int argc, char* argv[]) {
       pt->push_back(pythia.event[iP].pT());
       eta->push_back(pythia.event[iP].eta());
       phi->push_back(pythia.event[iP].phi());
+      tau->push_back(pythia.event[iP].tau());
    }
 
     // fill tree on each particle loop
