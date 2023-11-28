@@ -158,33 +158,33 @@ int main(int argc, char* argv[]) {
     for(int iP=0; iP<nParticles; iP++){
       
       // locate the higgs
-      if(pythia.event[iP].id() == 25){
+      // if(pythia.event[iP].id() == 25){
 	
-	// identify final higgs in the chain
-	const int iHiggs =getFinalParent(pythia.event, iP, 25);
-	std::cout<<iHiggs<<std::endl;
+      // 	// identify final higgs in the chain
+      // 	const int iHiggs =getFinalParent(pythia.event, iP, 25);
+      // 	// std::cout<<iHiggs<<std::endl;
 	
-	// get higgs daughter index ranges
-	int d1 = pythia.event[iHiggs].daughter1();
-	int d2 = pythia.event[iHiggs].daughter2();
+      // 	// get higgs daughter index ranges
+      // 	int d1 = pythia.event[iHiggs].daughter1();
+      // 	int d2 = pythia.event[iHiggs].daughter2();
 	
-	// identify dark quarks
-	if(abs(pythia.event[d1].id()) == 4900101){
+      // 	// identify dark quarks
+      // 	if(abs(pythia.event[d1].id()) == 4900101){
 
-	  // loop over the dark quarks
-	  for (int iQ = d1; iQ <= d2; ++iQ) {
+      // 	  // loop over the dark quarks
+      // 	  for (int iQ = d1; iQ <= d2; ++iQ) {
 	    
-	    // identify final dark quark in the chain
-            const int iDQ = getFinalParent(pythia.event, iQ, pythia.event[iQ].id());
-	    std::cout<< iQ << ", " << iDQ << ", " << pythia.event[iDQ].id() << ", " << pythia.event[iDQ].daughter1() << ", " << pythia.event[iDQ].daughter2() << std::endl;
+      // 	    // identify final dark quark in the chain
+      //       const int iDQ = getFinalParent(pythia.event, iQ, pythia.event[iQ].id());
+      // 	    // std::cout<< iQ << ", " << iDQ << ", " << pythia.event[iDQ].id() << ", " << pythia.event[iDQ].daughter1() << ", " << pythia.event[iDQ].daughter2() << std::endl;
 
-	    // loop over the dark quarks daughters
-	    for (int iF = pythia.event[iDQ].daughter1(); iF <= pythia.event[iDQ].daughter2(); ++iF) {
-	      std::cout<< "   " << iF << ", " << pythia.event[iF].id() << ", " << pythia.event[iF].daughter1() << ", " << pythia.event[iF].daughter2() << std::endl;
-	    }
-	  }
-	}
-      }
+      // 	    // loop over the dark quarks daughters
+      // 	    for (int iF = pythia.event[iDQ].daughter1(); iF <= pythia.event[iDQ].daughter2(); ++iF) {
+      // 	      std::cout<< "   " << iF << ", " << pythia.event[iF].id() << ", " << pythia.event[iF].daughter1() << ", " << pythia.event[iF].daughter2() << std::endl;
+      // 	    }
+      // 	  }
+      // 	}
+      // }
 
       // save particle information
       id->push_back(pythia.event[iP].id());
