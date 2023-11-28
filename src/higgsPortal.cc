@@ -47,7 +47,7 @@ const int getFinalParent(auto event, int iP, int pdgid){
   int d1 = event[iP].daughter1();
   int d2 = event[iP].daughter2();
   int id = event[iP].id();
-  
+
   // check if daughter is same id
   if( d1 != d2 ){
     return iP;
@@ -62,6 +62,7 @@ const int getFinalParent(auto event, int iP, int pdgid){
       return iP;
     }
   }
+
   return -1;
 }
 
@@ -102,6 +103,10 @@ int main(int argc, char* argv[]) {
   std::vector<double> *eta = 0;
   std::vector<double> *phi = 0;
   std::vector<double> *tau = 0;
+  std::vector<double> *xDec = 0;
+  std::vector<double> *yDec = 0;
+  std::vector<double> *zDec = 0;
+  std::vector<double> *tDec = 0;
 
   // initialize branches
   t->Branch("nParticles", &nParticles);
@@ -112,6 +117,10 @@ int main(int argc, char* argv[]) {
   t->Branch("eta", &eta);
   t->Branch("phi", &phi);
   t->Branch("tau",&tau);
+  t->Branch("xDec",&xDec);
+  t->Branch("yDec",&yDec);
+  t->Branch("zDec",&zDec);
+  t->Branch("tDec",&tDec);
 
   // time keeper for progress bar
   std::chrono::time_point<std::chrono::system_clock> time_start;
@@ -134,7 +143,10 @@ int main(int argc, char* argv[]) {
     eta->clear();
     phi->clear();
     tau->clear();
-
+    xDec->clear();
+    yDec->clear();
+    zDec->clear();
+    tDec->clear();
     
     // get event level information
     nParticles = event.size();
@@ -163,7 +175,7 @@ int main(int argc, char* argv[]) {
 	  for (int iQ = d1; iQ <= d2; ++iQ) {
 	    
 	    // identify final dark quark in the chain
-            const int iDQ =getFinalParent(pythia.event, iQ, pythia.event[d1].id());
+            const int iDQ = getFinalParent(pythia.event, iQ, pythia.event[iQ].id());
 	    std::cout<< iQ << ", " << iDQ << ", " << pythia.event[iDQ].id() << ", " << pythia.event[iDQ].daughter1() << ", " << pythia.event[iDQ].daughter2() << std::endl;
 
 	    // loop over the dark quarks daughters
@@ -172,9 +184,9 @@ int main(int argc, char* argv[]) {
 	    }
 	  }
 	}
-
-	break;
       }
+
+      // save particle information
       id->push_back(pythia.event[iP].id());
       status->push_back(pythia.event[iP].status());
       mass->push_back(pythia.event[iP].m());
@@ -182,6 +194,10 @@ int main(int argc, char* argv[]) {
       eta->push_back(pythia.event[iP].eta());
       phi->push_back(pythia.event[iP].phi());
       tau->push_back(pythia.event[iP].tau());
+      xDec->push_back(pythia.event[iP].xDec());
+      yDec->push_back(pythia.event[iP].yDec());
+      zDec->push_back(pythia.event[iP].zDec());
+      tDec->push_back(pythia.event[iP].tDec());
    }
 
     // fill tree on each particle loop
