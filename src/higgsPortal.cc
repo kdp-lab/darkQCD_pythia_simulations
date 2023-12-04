@@ -83,6 +83,7 @@ int main(int argc, char* argv[]) {
 
   // Shorthand for the event record in pythia.
   Event& event = pythia.event;
+  // const Info& info = pythia.info;
 
   // Read in commands from external file.
   pythia.readFile(pythiaCard.c_str());
@@ -96,6 +97,7 @@ int main(int argc, char* argv[]) {
 
   // initialize branches variables
   int nParticles;
+  // double mcEventWeight;
   std::vector<int> *id = 0;
   std::vector<int> *status = 0;
   std::vector<double> *mass = 0;
@@ -110,6 +112,7 @@ int main(int argc, char* argv[]) {
 
   // initialize branches
   t->Branch("nParticles", &nParticles);
+  // t->Branch("mcEventWeight", &mcEventWeight);
   t->Branch("id", &id);
   t->Branch("status", &status);
   t->Branch("mass", &mass);
@@ -150,6 +153,7 @@ int main(int argc, char* argv[]) {
     
     // get event level information
     nParticles = event.size();
+    // mcEventWeight = info.weight();
     
     // helpful flags
     bool finalHiggs = false;
