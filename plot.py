@@ -24,6 +24,7 @@ def count_particles_satisfying_cuts(file_path, tree_name, cuts):
     
     # count number of particles per event
     counts = np.sum(cut,axis=1)
+    print(counts)
     return [np.mean(counts), np.std(counts)]
 
 def process_file(file_path, tree_name, cuts, results_dict):
@@ -32,7 +33,8 @@ def process_file(file_path, tree_name, cuts, results_dict):
 if __name__ == "__main__":
 
     # Replace with your ROOT file path and tree name
-    file_paths = sorted(glob.glob("outdir/etaMassScan10k/higgs_portal_m=*_xio=*_xil=*.root"))
+    file_paths = sorted(glob.glob("outdir/etaMassScanCtauMin/higgs_portal_m=*_xio=*_xil=*_ctauMin.root"))
+    print(file_paths)
     tree_name = "t"
 
     # Define your cuts
@@ -56,6 +58,7 @@ if __name__ == "__main__":
 
     # Launch tasks for each file in parallel
     for file_path in file_paths:
+        print(file_path)
         pool.apply_async(process_file, (file_path, tree_name, cuts, results))
 
     # Close the pool and wait for all processes to finish
@@ -71,12 +74,11 @@ if __name__ == "__main__":
     xio = 1
     xil = 1
     m_eta = list(range(1,31))
-    mean = [results[f"outdir/etaMassScan10k/higgs_portal_m={m}_xio={xio}_xil={xil}.root"][0] for m in m_eta]
-    std = [results[f"outdir/etaMassScan10k/higgs_portal_m={m}_xio={xio}_xil={xil}.root"][1] for m in m_eta]
-    print(mean, std)
+    mean = [results[f"outdir/etaMassScanCtauMin/higgs_portal_m={m}_xio={xio}_xil={xil}_ctauMin.root"][0] for m in m_eta]
+    std = [results[f"outdir/etaMassScanCtauMin/higgs_portal_m={m}_xio={xio}_xil={xil}_ctauMin.root"][1] for m in m_eta]
 
     # save to file
-    outFileName = "outdir/etaMassScan10k/results.h5"
+    outFileName = "outdir/etaMassScanCtauMin/results.h5"
     # Open the HDF5 file in write mode
     with h5py.File(outFileName, "w") as f:
         # Create datasets within the HDF5 file and write the arrays

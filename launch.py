@@ -13,8 +13,8 @@ if __name__ == "__main__":
     xil = 1
     options_list = []
     for m in range(1,31):
-        card = f"cards/etaMassScan/higgs_portal_m={m}_xio={xio}_xil={xil}.cmnd"
-        outFileName = f"outdir/etaMassScan10k/higgs_portal_m={m}_xio={xio}_xil={xil}.root"
+        card = f"cards/etaMassScanCtauMin/higgs_portal_m={m}_xio={xio}_xil={xil}_ctauMin.cmnd"
+        outFileName = f"outdir/etaMassScanCtauMin/higgs_portal_m={m}_xio={xio}_xil={xil}_ctauMin.root"
         nevents = str(10000)
         options_list.append([card, outFileName, nevents])
 
