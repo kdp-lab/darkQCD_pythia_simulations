@@ -17,7 +17,7 @@ def count_particles_satisfying_cuts(file_path, tree_name, cuts):
         x = {b : tree[b].array() for b in branches}
 
         # compute variables
-        x["Lxy"] = np.sqrt(x["xDec"]**2 + x["xDec"]**2)
+        x["Lxy"] = np.sqrt(x["xDec"]**2 + x["yDec"]**2)
 
     # Apply cuts to count particles satisfying the conditions
     cut = (np.abs(x["id"])==cuts["id"]) * (x["pt"] > cuts["pt_min"]) * (abs(x["eta"]) < cuts["eta_max"]) * (x["Lxy"] < cuts["Lxy_max"])
