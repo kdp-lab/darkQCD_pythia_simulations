@@ -156,7 +156,7 @@ int main(int argc, char* argv[]) {
     // mcEventWeight = info.weight();
     
     // helpful flags
-    bool finalHiggs = false;
+    // bool finalHiggs = false;
     
     // loop over the particles. available properties listed here https://pythia.org/latest-manual/ParticleProperties.html
     for(int iP=0; iP<nParticles; iP++){

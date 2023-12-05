@@ -21,11 +21,10 @@ def count_particles_satisfying_cuts(file_path, tree_name, cuts):
 
     # Apply cuts to count particles satisfying the conditions
     cut = (np.abs(x["id"])==cuts["id"]) * (x["pt"] > cuts["pt_min"]) * (abs(x["eta"]) < cuts["eta_max"]) * (x["Lxy"] < cuts["Lxy_max"])
-    
+
     # count number of particles per event
     counts = np.sum(cut,axis=1)
-    print(counts)
-    return [np.mean(counts), np.std(counts)]
+    return [np.mean(counts), np.std(counts), counts]
 
 def process_file(file_path, tree_name, cuts, results_dict):
     results_dict[file_path] = count_particles_satisfying_cuts(file_path, tree_name, cuts)
@@ -34,7 +33,6 @@ if __name__ == "__main__":
 
     # Replace with your ROOT file path and tree name
     file_paths = sorted(glob.glob("outdir/etaMassScanCtauMin/higgs_portal_m=*_xio=*_xil=*_ctauMin.root"))
-    print(file_paths)
     tree_name = "t"
 
     # Define your cuts
@@ -59,6 +57,7 @@ if __name__ == "__main__":
     # Launch tasks for each file in parallel
     for file_path in file_paths:
         print(file_path)
+        # process_file(file_path, tree_name, cuts, results)
         pool.apply_async(process_file, (file_path, tree_name, cuts, results))
 
     # Close the pool and wait for all processes to finish
@@ -76,12 +75,15 @@ if __name__ == "__main__":
     m_eta = list(range(1,31))
     mean = [results[f"outdir/etaMassScanCtauMin/higgs_portal_m={m}_xio={xio}_xil={xil}_ctauMin.root"][0] for m in m_eta]
     std = [results[f"outdir/etaMassScanCtauMin/higgs_portal_m={m}_xio={xio}_xil={xil}_ctauMin.root"][1] for m in m_eta]
+    counts = [results[f"outdir/etaMassScanCtauMin/higgs_portal_m={m}_xio={xio}_xil={xil}_ctauMin.root"][2] for m in m_eta]
 
     # save to file
-    outFileName = "outdir/etaMassScanCtauMin/results.h5"
+    outFileName = "outdir/etaMassScanCtauMin/resultsNew.h5"
     # Open the HDF5 file in write mode
     with h5py.File(outFileName, "w") as f:
         # Create datasets within the HDF5 file and write the arrays
         f.create_dataset("m_eta", data=m_eta)
         f.create_dataset("mean", data=mean)
         f.create_dataset("std", data=std)
+        f.create_dataset("counts", data=counts)
+
