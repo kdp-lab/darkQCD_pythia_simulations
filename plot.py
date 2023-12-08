@@ -32,7 +32,7 @@ def process_file(file_path, tree_name, cuts, results_dict):
 if __name__ == "__main__":
 
     # Replace with your ROOT file path and tree name
-    file_paths = sorted(glob.glob("outdir/etaMassScanCtauMin/higgs_portal_m=*_xio=*_xil=*_ctauMin.root"))
+    file_paths = sorted(glob.glob("outdir/pythia8235/etaMassScanCtauMin/higgs_portal_m=*_xio=*_xil=*_ctauMin.root"))
     tree_name = "t"
 
     # Define your cuts
@@ -73,12 +73,12 @@ if __name__ == "__main__":
     xio = 1
     xil = 1
     m_eta = list(range(1,31))
-    mean = [results[f"outdir/etaMassScanCtauMin/higgs_portal_m={m}_xio={xio}_xil={xil}_ctauMin.root"][0] for m in m_eta]
-    std = [results[f"outdir/etaMassScanCtauMin/higgs_portal_m={m}_xio={xio}_xil={xil}_ctauMin.root"][1] for m in m_eta]
-    counts = [results[f"outdir/etaMassScanCtauMin/higgs_portal_m={m}_xio={xio}_xil={xil}_ctauMin.root"][2] for m in m_eta]
+    mean = [results[f"outdir/pythia8235/etaMassScanCtauMin/higgs_portal_m={m}_xio={xio}_xil={xil}_ctauMin.root"][0] for m in m_eta]
+    std = [results[f"outdir/pythia8235/etaMassScanCtauMin/higgs_portal_m={m}_xio={xio}_xil={xil}_ctauMin.root"][1] for m in m_eta]
+    counts = [results[f"outdir/pythia8235/etaMassScanCtauMin/higgs_portal_m={m}_xio={xio}_xil={xil}_ctauMin.root"][2] for m in m_eta]
 
     # save to file
-    outFileName = "outdir/etaMassScanCtauMin/resultsNew.h5"
+    outFileName = "outdir/pythia8235/etaMassScanCtauMin/results.h5"
     # Open the HDF5 file in write mode
     with h5py.File(outFileName, "w") as f:
         # Create datasets within the HDF5 file and write the arrays
