@@ -6,10 +6,10 @@ ROOT=`root-config --cflags --glibs`
 -include Makefile.inc
 
 # Check distribution (use local version first, then installed version).
-ifneq ("$(wildcard ../lib/libpythia8.*)","")
-  PREFIX_LIB=/home/abadea/pythia8307/lib
-  PREFIX_INCLUDE=/home/abadea/pythia8307/include
-endif
+# ifneq ("$(wildcard ../lib/libpythia8.*)","")
+#   PREFIX_LIB=/home/abadea/pythia8307/lib
+#   PREFIX_INCLUDE=/home/abadea/pythia8307/include
+# endif
 CXX_COMMON:=-I$(PREFIX_INCLUDE) $(CXX_COMMON) $(GZIP_LIB)
 CXX_COMMON+= -L$(PREFIX_LIB) -Wl,-rpath,$(PREFIX_LIB) -lpythia8 -ldl
 PYTHIA=$(PREFIX_LIB)/libpythia8$(LIB_SUFFIX)
@@ -28,8 +28,8 @@ mkdirBin:
 $(PYTHIA):
 	$(error Error: PYTHIA must be built, please run in the top PYTHIA directory)
 
-# higgs portal
-higgsPortal: $(PYTHIA) src/$$@.cc
+# higgs portal $(PYTHIA)
+higgsPortal: src/$$@.cc
 	$(CXX) src/$@.cc -o bin/$@.exe -w $(CXX_COMMON) $(ROOT_LIB) -ldl $(ROOT)
 
 # clean working dir

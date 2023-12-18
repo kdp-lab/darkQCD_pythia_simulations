@@ -42,6 +42,30 @@ void pbftp(double time_diff, int nprocessed, int ntotal){
   }
 }
 
+// anthony write recurisive to walk down higgs chain to get dark quarks
+const int getFinalParent(auto event, int iP, int pdgid){
+  int d1 = event[iP].daughter1();
+  int d2 = event[iP].daughter2();
+  int id = event[iP].id();
+
+  // check if daughter is same id
+  if( d1 != d2 ){
+    return iP;
+  }
+  else{
+    // if daughter id is the same as pdgid then keep stepping
+    if( event[d1].id() == pdgid ){
+      return getFinalParent(event, d1, pdgid);
+    }
+    // if daughter id is different then stop
+    else{
+      return iP;
+    }
+  }
+
+  return -1;
+}
+
 int main(int argc, char* argv[]) {
 
   // check user is inputting correct parameters
@@ -59,6 +83,7 @@ int main(int argc, char* argv[]) {
 
   // Shorthand for the event record in pythia.
   Event& event = pythia.event;
+  // const Info& info = pythia.info;
 
   // Read in commands from external file.
   pythia.readFile(pythiaCard.c_str());
@@ -72,6 +97,7 @@ int main(int argc, char* argv[]) {
 
   // initialize branches variables
   int nParticles;
+  // double mcEventWeight;
   std::vector<int> *id = 0;
   std::vector<int> *status = 0;
   std::vector<double> *mass = 0;
@@ -84,9 +110,9 @@ int main(int argc, char* argv[]) {
   std::vector<double> *zDec = 0;
   std::vector<double> *tDec = 0;
 
-
   // initialize branches
   t->Branch("nParticles", &nParticles);
+  // t->Branch("mcEventWeight", &mcEventWeight);
   t->Branch("id", &id);
   t->Branch("status", &status);
   t->Branch("mass", &mass);
@@ -124,13 +150,47 @@ int main(int argc, char* argv[]) {
     yDec->clear();
     zDec->clear();
     tDec->clear();
-
     
     // get event level information
     nParticles = event.size();
-
+    // mcEventWeight = info.weight();
+    
+    // helpful flags
+    // bool finalHiggs = false;
+    
     // loop over the particles. available properties listed here https://pythia.org/latest-manual/ParticleProperties.html
     for(int iP=0; iP<nParticles; iP++){
+      
+      // locate the higgs
+      // if(pythia.event[iP].id() == 25){
+	
+      // 	// identify final higgs in the chain
+      // 	const int iHiggs =getFinalParent(pythia.event, iP, 25);
+      // 	// std::cout<<iHiggs<<std::endl;
+	
+      // 	// get higgs daughter index ranges
+      // 	int d1 = pythia.event[iHiggs].daughter1();
+      // 	int d2 = pythia.event[iHiggs].daughter2();
+	
+      // 	// identify dark quarks
+      // 	if(abs(pythia.event[d1].id()) == 4900101){
+
+      // 	  // loop over the dark quarks
+      // 	  for (int iQ = d1; iQ <= d2; ++iQ) {
+	    
+      // 	    // identify final dark quark in the chain
+      //       const int iDQ = getFinalParent(pythia.event, iQ, pythia.event[iQ].id());
+      // 	    // std::cout<< iQ << ", " << iDQ << ", " << pythia.event[iDQ].id() << ", " << pythia.event[iDQ].daughter1() << ", " << pythia.event[iDQ].daughter2() << std::endl;
+
+      // 	    // loop over the dark quarks daughters
+      // 	    for (int iF = pythia.event[iDQ].daughter1(); iF <= pythia.event[iDQ].daughter2(); ++iF) {
+      // 	      std::cout<< "   " << iF << ", " << pythia.event[iF].id() << ", " << pythia.event[iF].daughter1() << ", " << pythia.event[iF].daughter2() << std::endl;
+      // 	    }
+      // 	  }
+      // 	}
+      // }
+
+      // save particle information
       id->push_back(pythia.event[iP].id());
       status->push_back(pythia.event[iP].status());
       mass->push_back(pythia.event[iP].m());
