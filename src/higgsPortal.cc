@@ -15,6 +15,7 @@
 #include "Pythia8/Pythia.h"
 #include "TFile.h"
 #include "TTree.h"
+#include "Pythia8Plugins/HepMC3.h"
 
 // declare pythia8 namespace
 using namespace Pythia8;
@@ -92,8 +93,13 @@ int main(int argc, char* argv[]) {
   pythia.init();
 
   // Create root file and tree
-  TFile* f = new TFile(outFileName.c_str(),"RECREATE");
+  TFile* f = new TFile((outFileName + ".root").c_str(),"RECREATE");
   TTree* t = new TTree("t","t");
+
+  // Interface for conversion from Pythia8::Event to HepMC event.
+  HepMC3::Pythia8ToHepMC3 toHepMC;
+  // Specify file where HepMC events will be stored.
+  HepMC3::WriterAscii ascii_io((outFileName + ".hepmc").c_str());
 
   // initialize branches variables
   int nParticles;
@@ -137,6 +143,15 @@ int main(int argc, char* argv[]) {
     // progress bar
     elapsed_seconds = (std::chrono::system_clock::now() - time_start);
     pbftp(elapsed_seconds.count(), iE, maxEvents);
+
+    // Construct new empty HepMC event and fill it.
+    // Default units are ( HepMC3::Units::GEV, HepMC3::Units::MM)
+    // but can be changed in the GenEvent constructor.
+    HepMC3::GenEvent hepmcevt;
+    toHepMC.fill_next_event( pythia, &hepmcevt );
+
+    // Write the HepMC event to file.
+    ascii_io.write_event(hepmcevt);
 
     // clear for new event
     id->clear();
