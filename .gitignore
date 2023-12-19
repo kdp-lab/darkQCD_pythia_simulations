@@ -1,5 +1,9 @@
 # folders
 bin/
+outdir/
+.ipynb_checkpoints/
 
 # file types
 *.root
+*.pdf
+*.hepmc
