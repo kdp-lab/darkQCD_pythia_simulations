@@ -7,3 +7,5 @@ outdir/
 *.root
 *.pdf
 *.hepmc
+*~
+*.txt
