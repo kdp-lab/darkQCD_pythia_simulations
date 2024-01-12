@@ -4,6 +4,27 @@ import argparse
 import matplotlib.pyplot as plt
 
 
+pid_translator = {
+        211:"pi+",
+        -211:"pi-",
+        22:"gamma",
+        2112:"neutron",
+        -2112:"antineutron",
+        2212:"proton",
+        -2212:"antiproton",
+        }
+
+pid_marker = {
+        211:"+",
+        -211: "_",
+        22:".",
+        2112:"o",
+        -2112:"o",
+        2212:"*",
+        -2212:"*",
+        }
+
+
 if __name__ == "__main__":
     
     # user options
@@ -29,7 +50,7 @@ if __name__ == "__main__":
             event_dict = {}
 
 
-            if iF >1:
+            if iF >9:
                 break # I just want to plot a few events
             print(f"Event {iF} has {len(event.particles)} particles")
             for particle in event.particles:
@@ -50,6 +71,7 @@ if __name__ == "__main__":
                 
                 # for now I won't cut in final state partiles or particles in the detectors, I want to see intermediate particles too
                 accept *= (particle.status == 1) # final state particle
+                accept *= (particle.momentum.pt()>1)
                 #accept *= ( (prod_R >= 30) * (prod_R <= 130) ) # within pixel detector ~ 30-130mm
 
                 if not accept:
@@ -70,7 +92,7 @@ if __name__ == "__main__":
                 if not (particle.pid in  event_dict):
                     event_dict[particle.pid] = []
 
-                event_dict[particle.pid].append([particle.momentum.eta(),particle.momentum.phi(),particle.status])
+                event_dict[particle.pid].append([particle.momentum.eta(),particle.momentum.phi(),particle.momentum.p3mod()])
                 
                 particles_id.append(particle.pid)
                 particles_status.append(particle.status)
@@ -79,23 +101,32 @@ if __name__ == "__main__":
 
 
 
-            print(event_dict)
 
             plt.style.use('ggplot')
             fig, ax = plt.subplots()
            
             for pid in event_dict:
-                ax.scatter(np.array(event_dict[pid])[:,0],np.array(event_dict[pid])[:,1], marker='.')
+                if pid in pid_translator:
+                    print(f"Ploting particle {pid} -> {pid_translator[pid]} ")
+                    scatter = ax.scatter(np.array(event_dict[pid])[:,0],np.array(event_dict[pid])[:,1],c=np.array(event_dict[pid])[:,2],cmap="magma",label=f"{pid_translator[pid]}",marker=f"{pid_marker[pid]}")
+                else:
+                    print(f"Ploting particle {pid} -> other ")
+                    scatter = ax.scatter(np.array(event_dict[pid])[:,0],np.array(event_dict[pid])[:,1],c=np.array(event_dict[pid])[:,2],cmap="magma",label="other",marker="s")
+
+
                 
             #ax.scatter(etas,phis,label=f"Event {iF}: {len(event.particles)} particles", marker='.')
             ax.set_xlabel("eta")
             ax.set_ylabel("phi")
-            ax.set_title(f"eta vs phi plot for event {iF}: {len(event.particles)} particles (cut status=1)")
+            ax.set_title(f"Event {iF}: {len(event.particles)} particles (cut status=1)")
+            
+            cbar = plt.colorbar(scatter,ax=ax, label='Momentum')
+
             ax.legend()
             
             
             print(f"Saving figure: ../figures/eta_vs_phi_event_{iF}_status=1.png")
-            plt.savefig(f"../figures/eta_vs_phi_event_{iF}_status=1.png")
+            plt.savefig(f"../figures/eta_vs_phi_event_{iF}_status=1_anyR.png")
             plt.cla()
 
             #break # need to understand what to put in track_list between events
