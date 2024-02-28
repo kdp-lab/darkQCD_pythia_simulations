@@ -37,8 +37,8 @@ if __name__ == "__main__":
     # list for tracks
     #tracks = [] # cotb cota p flp localx localy pT
     fname = ops.inFileName
-    outFolder = (fname.split('/')[-1]).split('.')[0]
-    print(outFolder)
+    outFile = (fname.split('/')[-1]).split('.')[0]
+
     # pyhepmc.open can read most HepMC formats using auto-detection
     with pyhepmc.open(fname) as f:
         # loop over events
@@ -55,8 +55,8 @@ if __name__ == "__main__":
             # loop over particles
 
 
-            #if iF >99:
-            #    break # I just want to plot a few events
+            if iF >99:
+                break # I just want to plot a few events
             
             print(f"Event {iF} has {len(event.particles)} particles")
             for particle in event.particles:
@@ -121,7 +121,7 @@ if __name__ == "__main__":
 
         #ax.scatter(etas,phis,label=f"Event {iF}: {len(event.particles)} particles", marker='.')
         #ax.hist(particles['mass'],range=(0,20),log=True,bins=50)
-        ax.hist(particles['pt'],log=True,bins=20)
+        ax.hist(particles['pt'],density=True,log=True,bins=20)
         ax.set_xlabel("pt[GeV]")
         ax.set_ylabel("counts")
         ax.set_title(f"pt histogram status 1")
@@ -131,13 +131,15 @@ if __name__ == "__main__":
             
           
         
-        if not os.path.exists(f"../../figures/kinematics/{outFolder}/all/"):
-            print(f"Creating directory ../../figures/kinematics/{outFolder}/all/")
-            os.makedirs(f"../../figures/kinematics/{outFolder}/all/")
+        outFolder = f"/local/d1/mmantinan/darkQCD_pythia_simulations/figures/kinematics/pt/status1/"
+        
+        if not os.path.exists(outFolder):
+            print(f"Creating directory {outFolder}")
+            os.makedirs(outFolder)
+        
 
-
-        print(f"Saving figure: ../../figures/kinematics/{outFolder}/all/pt_histogram_status1.png")
-        plt.savefig(f"../../figures/kinematics/{outFolder}/all/pt_histogram_status1.png")
+        print(f"Saving figure: {outFolder}/{outFile}.png")
+        plt.savefig(f"{outFolder}/{outFile}.png")
 
         plt.cla()
 

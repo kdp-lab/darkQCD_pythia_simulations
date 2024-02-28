@@ -66,8 +66,8 @@ if __name__ == "__main__":
     # list for tracks
     #tracks = [] # cotb cota p flp localx localy pT
     fname = ops.inFileName
-    outFolder = (fname.split('/')[-1]).split('.')[0]
-    print(outFolder)
+    outFile = (fname.split('/')[-1]).split('.')[0]
+
     # pyhepmc.open can read most HepMC formats using auto-detection
     with pyhepmc.open(fname) as f:
         # loop over events
@@ -142,8 +142,8 @@ if __name__ == "__main__":
         particles = pd.DataFrame(dict)
 
         # use only dark particles
-        #particles = particles[particles["id"].isin(pid_dark)]
-        particles = particles[particles["id"]==4900111]
+        particles = particles[particles["id"].isin(pid_dark)]
+        #particles = particles[particles["id"]==4900111]
 
         plt.style.use('ggplot')
         fig, ax = plt.subplots()
@@ -151,23 +151,26 @@ if __name__ == "__main__":
 
         #ax.scatter(etas,phis,label=f"Event {iF}: {len(event.particles)} particles", marker='.')
         #ax.hist(particles['mass'],range=(0,20),log=True,bins=50)
-        ax.hist(particles['mass'],range=(0,20),bins=50)
+        ax.hist(particles['mass'],density=True,range=(0,31),bins=31)
         ax.set_xlabel("mass")
         ax.set_ylabel("counts")
-        ax.set_title(f"mass histogram dark scalar meson")
+        ax.set_title(f"mass histogram dark")
             
 
         ax.legend()
             
           
         
-        if not os.path.exists(f"../../figures/kinematics/{outFolder}/dark/"):
-            print(f"Creating directory ../../figures/kinematics/{outFolder}/dark/")
-            os.makedirs(f"../../figures/kinematics/{outFolder}/dark/")
+        outFolder = f"/local/d1/mmantinan/darkQCD_pythia_simulations/figures/kinematics/mass/dark/"
+        
+        if not os.path.exists(outFolder):
+            print(f"Creating directory {outFolder}")
+            os.makedirs(outFolder)
+        
 
+        print(f"Saving figure: {outFolder}/{outFile}.png")
+        plt.savefig(f"{outFolder}/{outFile}.png")
 
-        print(f"Saving figure: ../../figures/kinematics/{outFolder}/dark/mass_histogram_scalar.png")
-        plt.savefig(f"../../figures/kinematics/{outFolder}/dark/mass_histogram_scalar.png")
 
         plt.cla()
 

@@ -119,7 +119,7 @@ if __name__ == "__main__":
            
 
         #ax.scatter(etas,phis,label=f"Event {iF}: {len(event.particles)} particles", marker='.')
-        ax.hist(particles['mass'],range=(0,20),log=True,bins=50)
+        ax.hist(particles['mass'],range=(0,2),log=True,bins=20)
         #ax.hist(particles['mass'],log=True,bins=100)
         ax.set_xlabel("mass")
         ax.set_ylabel("counts")

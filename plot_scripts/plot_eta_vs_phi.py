@@ -2,7 +2,7 @@ import pyhepmc
 import numpy as np
 import argparse
 import matplotlib.pyplot as plt
-
+import os
 
 pid_translator = {
         211:"pi+",
@@ -35,9 +35,11 @@ if __name__ == "__main__":
 
     # list for tracks
     #tracks = [] # cotb cota p flp localx localy pT
-
+    fname = ops.inFileName
+    outFolder = (fname.split('/')[-1]).split('.')[0]
+    print(outFolder)
     # pyhepmc.open can read most HepMC formats using auto-detection
-    with pyhepmc.open(ops.inFileName) as f:
+    with pyhepmc.open(fname) as f:
         # loop over events
 
         for iF, event in enumerate(f):
@@ -123,10 +125,14 @@ if __name__ == "__main__":
             cbar = plt.colorbar(scatter,ax=ax, label='Momentum')
 
             ax.legend()
-            
-            
-            print(f"Saving figure: ../figures/eta_vs_phi_event_{iF}_status=1.png")
-            plt.savefig(f"../figures/eta_vs_phi_event_{iF}_status=1_anyR.png")
+
+            if not os.path.exists(f"../figures/eta_phi/{outFolder}/"):
+                print(f"Creating directory ../figures/eta_phi/{outFolder}/")
+                os.makedirs(f"../figures/eta_phi/{outFolder}/")
+
+
+            print(f"Saving figure: ../figures/eta_phi/{outFolder}/eta_vs_phi_event_{iF}_status=1.png")
+            plt.savefig(f"../figures/eta_phi/{outFolder}/eta_vs_phi_event_{iF}_status=1_anyR.png")
             plt.cla()
 
             #break # need to understand what to put in track_list between events

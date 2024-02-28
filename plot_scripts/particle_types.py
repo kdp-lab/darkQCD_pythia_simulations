@@ -112,15 +112,19 @@ if __name__ == "__main__":
 
         particles = pd.DataFrame(dict)
 
-        #print(df.head())
-
+        # select status1
+        #particles = particles[particles["status"]==1]
+        
+        #select 15 GeV
+        particles = particles[(particles["mass"]>8) & (particles["mass"]<12)]
+        print(set(particles["id"]))
+        
+        """
         plt.style.use('ggplot')
         fig, ax = plt.subplots()
            
 
-        #ax.scatter(etas,phis,label=f"Event {iF}: {len(event.particles)} particles", marker='.')
-        ax.hist(particles['mass'],range=(0,20),log=True,bins=50)
-        #ax.hist(particles['mass'],log=True,bins=100)
+        ax.hist(particles['mass'],log=True,bins=100)
         ax.set_xlabel("mass")
         ax.set_ylabel("counts")
         ax.set_title(f"mass histogram")
@@ -135,9 +139,9 @@ if __name__ == "__main__":
             os.makedirs(f"../../figures/kinematics/{outFolder}/all/")
 
 
-        print(f"Saving figure: ../../figures/kinematics/{outFolder}/all/mass_histogram_20GeV.png")
-        plt.savefig(f"../../figures/kinematics/{outFolder}/all/mass_histogram_20GeV.png")
+        print(f"Saving figure: ../../figures/kinematics/{outFolder}/all/mass_histogram.png")
+        plt.savefig(f"../../figures/kinematics/{outFolder}/all/mass_histogram.png")
 
         plt.cla()
 
-
+        """
